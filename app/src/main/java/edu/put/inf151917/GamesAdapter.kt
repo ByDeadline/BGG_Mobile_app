@@ -29,7 +29,7 @@ class GamesAdapter(private val Games: List<Game> ):
     }
     override fun onBindViewHolder(holder: GamesAdapter.GameViewHolder, position: Int) {
         val game = Games[position]
-        val gameViewHolder = holder as GameViewHolder
+        val gameViewHolder = holder
         gameViewHolder.GameName.text = game.name
 
         val image = byteArrayToBitmap(game.image)

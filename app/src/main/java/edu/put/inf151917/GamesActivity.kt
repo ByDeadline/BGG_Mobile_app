@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import edu.put.inf151917.databinding.ActivityGamesBinding
 import java.net.URL
-import com.gu.toolargetool.TooLargeTool;
+import com.gu.toolargetool.TooLargeTool
 import edu.put.inf151917.DataAccess
 class GamesActivity: AppCompatActivity() {
 

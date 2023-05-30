@@ -35,9 +35,10 @@ object BasicCommand{
                 "${TableInfo.TABLE_GAME_COLUMN_NAME} VARCHAR(50)," +
                 "${TableInfo.TABLE_GAME_COLUMN_YEAR} INT," +
                 "${TableInfo.TABLE_GAME_COLUMN_THUMBNAIL} BLOB," +
-                "${TableInfo.TABLE_GAME_COLUMN_IMAGE} BLOB)"
+                "${TableInfo.TABLE_GAME_COLUMN_IMAGE} BLOB);"
     val SQL_DELETE_TABLE: String =
-        "DROP TABLE IF EXISTS ${TableInfo.TABLE_GAME_NAME}"
+        "DROP TABLE IF EXISTS ${TableInfo.TABLE_GAME_NAME};"+
+        "DROP TABLE IF EXISTS ${TableInfo.TABLE_USER_NAME}"
 }
 
 class DataBaseHelper(context: Context): SQLiteOpenHelper(context, TableInfo.TABLE_GAME_NAME, null, 1){
@@ -54,10 +55,17 @@ class DataBaseHelper(context: Context): SQLiteOpenHelper(context, TableInfo.TABL
 class DataAccess(private val context: Context) {
     private val databaseHelper = DataBaseHelper(context)
     private val database: SQLiteDatabase = databaseHelper.writableDatabase
-
+    fun dropTables(){
+        database.execSQL(BasicCommand.SQL_DELETE_TABLE)
+    }
     fun insertData(Games: List<Game>){
+
         val db = MainActivity.DataBaseHelper(context)
         val dbWrite = db.writableDatabase
+        try {dbWrite.execSQL(BasicCommand.SQL_CREATE_TABLE_GAMES)}
+        catch (e: android.database.sqlite.SQLiteException){
+            println("Database already exists")
+        }
         val value = ContentValues()
         for (game in Games){
             try {
@@ -88,15 +96,31 @@ class DataAccess(private val context: Context) {
     fun CreateUser(username: String): Boolean {
 
         val db = MainActivity.DataBaseHelper(context)
+
         val dbWrite = db.writableDatabase
-        if (GetUserInfo() == null){
+        try {dbWrite.execSQL(BasicCommand.SQL_CREATE_TABLE_USER)}
+        catch (e: android.database.sqlite.SQLiteException){
+            println("Table already exists")
+        }
+        val info = GetUserInfo()
+        info.use{
+            if (info.moveToFirst()){
+                if (it.getString(it.getColumnIndexOrThrow("username")) == username){
+                    return false
+                } else{
+                    dbWrite.execSQL("UPDATE USER SET username = '$username',updated_at = CURRENT_TIMESTAMP, created_at = CURRENT_TIMESTAMP WHERE username = '${it.getString(it.getColumnIndexOrThrow("username"))}'")
+                    return true
+                }
+            }
             val value = ContentValues()
             value.put("username", username)
             dbWrite.insertOrThrow("USER", null, value)
             return true
         }
-        return false
-
+        val value = ContentValues()
+        value.put("username", username)
+        dbWrite.insertOrThrow("USER", null, value)
+        return true
     }
     fun GetUserInfo(): Cursor {
         return database.rawQuery("SELECT * FROM USER", null)

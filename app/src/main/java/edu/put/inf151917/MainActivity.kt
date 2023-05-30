@@ -104,6 +104,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
+
         /*val dataAccess = DataAccess(applicationContext)
         if (dataAccess != null) {
             val intent = Intent(this, GamesActivity::class.java)
@@ -114,7 +115,7 @@ class MainActivity : AppCompatActivity() {
         val Search = findViewById<Button>(R.id.Search_button)
 
 
-        Search.setOnClickListener(){
+        Search.setOnClickListener {
             val UserName = findViewById<EditText>(R.id.User_Name_Inp).text.toString()
             println("abc")
             var LOGGEDINUSER = UserInfo()
@@ -125,27 +126,29 @@ class MainActivity : AppCompatActivity() {
             var i = 1
             var j = 0
             // 1 game has 6 lines
-            while(i<responseBody!!.lines().size-3){
-                if (responseBody!!.lines()[i+4].contains("own=\"0\"") || !(responseBody!!.lines()[i].contains("subtype=\"boardgame\""))){
+            while(i< responseBody.lines().size-3){
+                if (responseBody.lines()[i+4].contains("own=\"0\"") || !(responseBody.lines()[i].contains("subtype=\"boardgame\""))){
                     i+=6
                     continue
                 } else {
                     games.add(Game())
                     games[j].id =
-                        responseBody!!.lines()[i].substringAfter("objectid=\"").substringBefore("\"")
+                        responseBody.lines()[i].substringAfter("objectid=\"").substringBefore("\"")
                     i++
                     games[j].name =
-                        responseBody!!.lines()[i].substringAfter(">").substringBefore("</name>")
+                        responseBody.lines()[i].substringAfter(">").substringBefore("</name>")
                     games[j].name = Html.fromHtml(games[j].name).toString()
                     i++
                     games[j].year =
-                        responseBody!!.lines()[i].substringAfter("<yearpublished>")
+                        responseBody.lines()[i].substringAfter("<yearpublished>")
                             .substringBefore("</yearpublished>")
-                    games[j].image = downloadImage(responseBody!!.lines()[i].substringAfter("<image>")
+                    games[j].image = downloadImage(
+                        responseBody.lines()[i].substringAfter("<image>")
                         .substringBefore("</image>"))
 
                     i += 1
-                    games[j].thumbnail = downloadImage(responseBody!!.lines()[i].substringAfter("<thumbnail>")
+                    games[j].thumbnail = downloadImage(
+                        responseBody.lines()[i].substringAfter("<thumbnail>")
                         .substringBefore("</thumbnail>"))
                     i+= 3
 
@@ -173,27 +176,29 @@ class MainActivity : AppCompatActivity() {
         var i = 1
         var j = 0
         // 1 game has 6 lines
-        while(i<responseBody!!.lines().size-3){
-            if (responseBody!!.lines()[i+4].contains("own=\"0\"") || !(responseBody!!.lines()[i].contains("subtype=\"boardgame\""))){
+        while(i< responseBody.lines().size-3){
+            if (responseBody.lines()[i+4].contains("own=\"0\"") || !(responseBody.lines()[i].contains("subtype=\"boardgame\""))){
                 i+=6
                 continue
             } else {
                 games.add(Game())
                 games[j].id =
-                    responseBody!!.lines()[i].substringAfter("objectid=\"").substringBefore("\"")
+                    responseBody.lines()[i].substringAfter("objectid=\"").substringBefore("\"")
                 i++
                 games[j].name =
-                    responseBody!!.lines()[i].substringAfter(">").substringBefore("</name>")
+                    responseBody.lines()[i].substringAfter(">").substringBefore("</name>")
                 games[j].name = Html.fromHtml(games[j].name).toString()
                 i++
                 games[j].year =
-                    responseBody!!.lines()[i].substringAfter("<yearpublished>")
+                    responseBody.lines()[i].substringAfter("<yearpublished>")
                         .substringBefore("</yearpublished>")
-                games[j].image = downloadImage(responseBody!!.lines()[i].substringAfter("<image>")
+                games[j].image = downloadImage(
+                    responseBody.lines()[i].substringAfter("<image>")
                     .substringBefore("</image>"))
 
                 i += 1
-                games[j].thumbnail = downloadImage(responseBody!!.lines()[i].substringAfter("<thumbnail>")
+                games[j].thumbnail = downloadImage(
+                    responseBody.lines()[i].substringAfter("<thumbnail>")
                     .substringBefore("</thumbnail>"))
                 i+= 3
 
@@ -203,13 +208,12 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-        val intent = Intent(this, GamesActivity::class.java)
-        intent.putExtra("Size", games.size)
 
-        startActivity(intent)
 
         val dataAccess = DataAccess(this)
+        dataAccess.dropTables()
         dataAccess.insertData(games)
+
         if (dataAccess.CreateUser(LOGGEDINUSER.username)){
             println("User created")
         } else {
